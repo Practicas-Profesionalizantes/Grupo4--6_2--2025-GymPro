@@ -1,0 +1,473 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+    --primary-color: #E6BA07;
+    --background-color: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #333333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.hide {
+    display: none;
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.logo {
+    width: 200px;
+    margin-bottom: 2rem;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-top: 20px;
+    margin-left: 5%;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 90%;
+    height: 2px;
+    background: #333;
+    z-index: 1;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 28%;
+    height: 2px;
+    background: var(--primary-color);
+    z-index: 1;
+    transition: width 0.3s ease;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+    background: var(--primary-color);
+    color: black;
+    border-color: var(--primary-color);
+}
+
+.step-text {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.step.active .step-text {
+    color: var(--primary-color);
+}
+
+/* Main Content Styles */
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: 400;
+    font-style: normal;
+    margin-bottom: 1rem;
+    font-family: "Anton", sans-serif;
+}
+
+.purchase-section p {
+    font-weight: bold;
+}
+
+.purchase-section .title {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    position: absolute;
+    gap: 1rem;
+    margin: 2rem 0;
+    margin-top: 5%;
+}
+
+/* Plan Toggle Styles */
+
+input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid white;
+    background: transparent;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: all .3s;
+}
+
+input[type="checkbox"]:checked {
+    background: yellow;
+    border-color: yellow;
+}
+
+input[type="checkbox"]::after {
+    content: "✔";
+    font-size: 16px;
+    color: black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+input[type="checkbox"]:checked::after {
+    display: block;
+}
+
+/* Plan Cards Styles */
+.plans {
+    display: grid;
+    gap: 1rem;
+    margin: 2rem 0;
+    margin-top: 26%;
+}
+
+.plan {
+    background-color: #2a2a2a;
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: border 0.3s;
+    cursor: pointer;
+}
+
+.plan.selected {
+    border-color: var(--primary-color);
+}
+
+.plan h3 {
+    margin-bottom: 1rem;
+}
+
+.discount-badge {
+    width: 20%;
+    float: right;
+    background-color: var(--primary-color);
+    color: black;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.inscription-bar {
+    background-color: #1a1a1a;
+    padding: 12px;
+    margin: 15px -25px -15px -25px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.inscription-bar p {
+    font-weight: bold;
+    margin: 0;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.price span {
+    font-size: 1rem;
+}
+
+.price .prePrice {
+    color: #B4B4B4;
+    text-decoration: line-through;
+}
+
+.payment-method {
+    font-weight: bold;
+}
+
+.payment-method span {
+    color: #B4B4B4;
+    font-size: .8rem;
+}
+
+/* Form Styles */
+.dataForm {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+input, select {
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: var(--text-color);
+    width: 100%;
+}
+
+/* Plan Conditions Styles */
+.plan-conditions {
+    background-color: #333;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+    border-left: 5px solid var(--primary-color);
+    margin-bottom: 2%;
+}
+
+.conditions-box {
+    margin-bottom: 2rem;
+}
+
+.conditions-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.conditions-box .price {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.conditions-box ul {
+    list-style: none;
+    color: #B4B4B4;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+}
+
+.conditions-box {
+    max-width: 600px;
+}
+
+.topMessage-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.topMessage h3 {
+    background-color: #464634;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1rem;
+    border: 1px solid var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.discount-box select {
+    border-radius: 25px;
+    padding: 10px 20px;
+    background: #333;
+    border: 1px solid rgba(255,255,255,0.1);
+    width: 150%;
+    margin-left: -50%;
+    padding-right: 40px;
+}
+
+.final-price {
+    background-color: #333;
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 2rem 0;
+}
+
+.final-price p {
+    text-align: left;
+}
+
+.final-price span {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.terms {
+    margin-bottom: 2rem;
+}
+
+.terms label {
+    display: flex;
+    color: #B4B4B4;
+    margin-bottom: 15px;
+}
+
+.terms label input {
+    margin-right: 1rem;
+    width: 20px;
+    background: none;
+    border: 1px solid white;
+}
+
+.terms label a {
+    text-decoration: none;
+    color: white;
+    margin-left: 4px;
+    margin-right: 5px;
+}
+
+.confirm-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    text-transform: uppercase;
+}
+
+.confirm-button:hover {
+    opacity: 0.9;
+}
+
+.data-section {
+    text-align: right;
+}
+
+.data-section p {
+    font-weight: bold;
+}
+
+.data-section #personalDataForm {
+    margin-top: 22%;
+}
+
+.data-section #personalDataForm h3 {
+    text-align: left;
+    margin-top: 25px;
+}
+
+.back-btn {
+    padding: 10px 25px;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.back-btn:hover{
+    background: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+    .split-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .progress-bar {
+        font-size: 0.8rem;
+    }
+
+    .progress-bar::before {
+        width: 70%;
+    }
+
+    .plan-conditions .price {
+        font-size: 1.8rem;
+    }
+
+    .discount-box select {
+        width: 100%;
+        margin-left: 0%;
+    }
+
+    .topMessage-container {
+        margin-left: -15px;
+    }
+}
