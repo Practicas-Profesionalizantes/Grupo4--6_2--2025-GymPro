@@ -1,0 +1,14 @@
+{
+    "web": {
+        "port": 80
+    },
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "pass": "",
+        "db": "gympro"
+    },
+    "auth": {
+        "secret": "e7bbe32b-df9a-45b4-822e-105d3e261f24"
+    }
+}
