@@ -6,6 +6,9 @@ const express = require('express');
 const functions = require('./functions/functions');
 const auth = require('./functions/auth');
 
+// Step 1: Import the parts of the module you want to use
+const { MercadoPagoConfig } = require('mercadopago');
+
 // Database info
 const database = {
     host: config.db.host, 
@@ -13,6 +16,11 @@ const database = {
     password: config.db.pass,
     database: config.db.db
 }
+
+const mpClient = new MercadoPagoConfig({
+	accessToken: 'TEST-4815310529209600-061216-446fce6957287eb12e1be698cf28a7c6-1041792044',
+	options: { timeout: 5000 },
+});
 
 // Routes
 const routers = {
@@ -59,7 +67,7 @@ function loadPages(path, router) {
             
             if (stat.isFile() && x.endsWith('.js')) {
                 const Event = require(fullPath.replace('server/', ''));
-                Event(router, database);
+                Event(router, database, mpClient);
             } else if (stat.isDirectory()) {
                 loadPages(fullPath, router);
             }

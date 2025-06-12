@@ -1,57 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import PlanOption from '../../components/subscription/PlanOption';
 import HeaderProcessBar from '../../components/payment/HeaderProcessBar';
 
 function SubscriptionPage() {
+    const [plans, setPlans] = useState([]);
+    const [selectedPlanId, setSelectedPlanId] = useState(null);
+
+    useEffect(() => {
+        const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
+        axios.get(`${baseURL}/api/plans/get`)
+            .then(res => setPlans(res.data.data))
+            .catch(err => console.error(err));
+    }, []);
+
+
     return (
     <>
         <div class="container">
             <HeaderProcessBar />
             <main>
-                <form action="/payment" method="get">
+                <form action="/api/payment" method="post">
                     <div className="split-layout">
                         <section className="purchase-section">
                             <h1>SELECCIONÁ TU PLAN</h1>
                             <p>¡ELEGÍ EL ABONO QUE SE ADAPTE A VOS!</p>
 
-                            <div className="plans">
-                                <PlanOption
-                                    id={1}
-                                    title="PLAN FORZA FLEX"
-                                    price={`<span class='prePrice'>$38.990/mes</span>$27.290<span>/MES</span>`}
-                                    extraInfo={[
-                                        `DÉBITO AUTOMÁTICO <span>(Permanencia mínima de 3 meses)</span>`,
-                                        `<div class='inscription-bar'><p>INSCRIPCIÓN: $5000</p></div>`
-                                    ]}
-                                    discount="30% OFF!"
-                                >
-                                    <input type="radio" name="plan" value="0" className="hide" required />
-                                </PlanOption>
+                                <div className="plans">
+                                    {(() => {
+                                        const plan = plans.find(e => e.id === 1);
+                                        if (!plan) return null;
 
-                                <PlanOption
-                                    id={2}
-                                    title="PLAN SEMESTRAL + MULTISEDE"
-                                    price="$36.990<span>/MES</span>"
-                                    extraInfo={[
-                                        "UN PAGO CON DÉBITO",
-                                        "¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $39.990)</span>"
-                                    ]}
-                                >
-                                    <input type="radio" name="plan" value="1" className="hide" required />
-                                </PlanOption>
+                                        return (
+                                            <PlanOption
+                                                id={1}
+                                                title={plan.name}
+                                                price={plan.price}
+                                                extraInfo={[
+                                                    `DÉBITO AUTOMÁTICO <span>(Permanencia mínima de 3 meses)</span>`,
+                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
+                                                ]}
+                                                discount={plan.discount}
+                                                selected={selectedPlanId}
+                                                onClick={setSelectedPlanId}
+                                            ></PlanOption>
+                                        );
+                                    })()}
+                                    {(() => {
+                                        const plan = plans.find(e => e.id === 2);
+                                        if (!plan) return null;
+                                        
+                                        return (
+                                            <PlanOption
+                                                id={2}
+                                                title={`${plan.name} + MULTISEDE`}
+                                                price={plan.price}
+                                                extraInfo={[
+                                                    "UN PAGO CON DÉBITO",
+                                                    `¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $${Math.round(plan.price/6).toLocaleString('es-AR')})</span>`,
+                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
+                                                ]}
+                                                selected={selectedPlanId}
+                                                onClick={setSelectedPlanId}
+                                            ></PlanOption>
+                                        );
+                                    })()}
+                                    {(() => {
+                                        const plan = plans.find(e => e.id === 3);
+                                        if (!plan) return null;
 
-                                <PlanOption
-                                    id={3}
-                                    title="PLAN ANUAL + MULTISEDE"
-                                    price="$33.990<span>/MES</span>"
-                                    extraInfo={[
-                                        "UN PAGO CON DÉBITO",
-                                        "¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $74.990)</span>"
-                                    ]}
-                                >
-                                    <input type="radio" name="plan" value="2" className="hide" required />
-                                </PlanOption>
-                            </div>
+                                        return (
+                                            <PlanOption
+                                                id={3}
+                                                title={`${plan.name} + MULTISEDE`}
+                                                price={plan.price}
+                                                extraInfo={[
+                                                    "UN PAGO CON DÉBITO",
+                                                    `¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $${Math.round(plan.price/6).toLocaleString('es-AR')})</span>`,
+                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
+                                                ]}
+                                                selected={selectedPlanId}
+                                                onClick={setSelectedPlanId}
+                                            ></PlanOption>
+                                        );
+                                    })()}
+                                </div>
 
                             <div className="terms">
                                 <label>

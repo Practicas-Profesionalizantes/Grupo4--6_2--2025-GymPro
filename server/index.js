@@ -11,6 +11,8 @@ const auth = require('./functions/auth');
 const cookieParser = require('cookie-parser');
 const bp = require('body-parser');
 
+const cors = require('cors');
+
 // settings
 app.set('port', config.web.port);
 // app.set('views', path.join(__dirname, 'client/pages'));
@@ -26,6 +28,8 @@ app.use(session({
 }))
 app.use(useragent.express());
 app.use(cookieParser());
+app.use(cors());
+
 
 app.use((req, res, next) => {
     // res.locals.getFile = function(filePath) {
