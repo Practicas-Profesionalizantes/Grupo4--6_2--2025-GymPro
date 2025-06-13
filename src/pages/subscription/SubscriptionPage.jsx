@@ -5,11 +5,12 @@ import PlanOption from '../../components/subscription/PlanOption';
 import HeaderProcessBar from '../../components/payment/HeaderProcessBar';
 
 function SubscriptionPage() {
+    const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
+
     const [plans, setPlans] = useState([]);
     const [selectedPlanId, setSelectedPlanId] = useState(null);
 
     useEffect(() => {
-        const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
         axios.get(`${baseURL}/api/plans/get`)
             .then(res => setPlans(res.data.data))
             .catch(err => console.error(err));
@@ -21,7 +22,7 @@ function SubscriptionPage() {
         <div class="container">
             <HeaderProcessBar />
             <main>
-                <form action="/api/payment" method="post">
+                <form action={`${baseURL}/api/payment/create`} method="post">
                     <div className="split-layout">
                         <section className="purchase-section">
                             <h1>SELECCIONÁ TU PLAN</h1>
@@ -90,10 +91,10 @@ function SubscriptionPage() {
                             <div className="terms">
                                 <label>
                                     <input type="checkbox" required />
-                                    Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a>.
+                                    Acepto los <a href="/terminos-y-condiciones" target="_blank">Términos y Condiciones</a> y la <a href="/politica-de-privacidad" target="_blank">Política de Privacidad</a>.
                                 </label>
                                 <label>
-                                    <input type="checkbox" required />
+                                    <input type="checkbox" />
                                     Acepto recibir comunicaciones.
                                 </label>
                             </div>
@@ -105,18 +106,18 @@ function SubscriptionPage() {
 
                             <div className="dataForm" id="personalDataForm">
                                 <div className="form-row">
-                                    <input type="text" placeholder="Nombre" name="nombre" required />
-                                    <input type="text" placeholder="Apellido" name="apellido" required />
+                                    <input type="text" placeholder="Nombre" name="name" required />
+                                    <input type="text" placeholder="Apellido" name="lastname" required />
                                 </div>
                                 <div className="form-row">
                                     <select name="documentoTipo" required>
                                         <option disabled value="">Tipo De Documento</option>
                                         <option value="dni">DNI</option>
                                     </select>
-                                    <input type="number" name="documentoNumero" placeholder="Número" required />
+                                    <input type="number" name="documentoNumero" placeholder="phone" required />
                                 </div>
                                 <div className="form-row">
-                                    <select name="genero" required>
+                                    <select name="sex" required>
                                         <option disabled value="">Seleccionar Género</option>
                                         <option value="m">Masculino</option>
                                         <option value="f">Femenino</option>
@@ -124,17 +125,17 @@ function SubscriptionPage() {
                                     <input type="date" name="nacimiento" required />
                                 </div>
                                 <input type="email" name="email" placeholder="Email" required />
-                                <input type="number" name="contactoEmergencia" placeholder="Contacto De Emergencia" required />
+                                <input type="number" name="emergencyContact" placeholder="Contacto De Emergencia" required />
 
                                 <h3>Domicilio</h3>
                                 <div className="form-row">
-                                    <input type="text" name="calle" placeholder="Calle" required />
-                                    <input type="number" name="calleNumero" placeholder="Número" required />
-                                    <input type="text" name="dpto" placeholder="Dpto/Lote" />
+                                    <input type="text" name="address" placeholder="Calle" required />
+                                    <input type="number" name="addressNumber" placeholder="Número" required />
+                                    <input type="text" name="floor" placeholder="Dpto/Lote" />
                                 </div>
                                 <div className="form-row">
                                     <input type="text" name="ciudad" placeholder="Ciudad" required />
-                                    <select name="provincia" required>
+                                    <select name="city" required>
                                         <option disabled value="">Seleccionar Provincia</option>
                                         <option value="C">CABA</option>
                                         <option value="B">PROVINCIA DE BUENOS AIRES</option>

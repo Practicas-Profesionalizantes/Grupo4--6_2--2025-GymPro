@@ -102,7 +102,7 @@ function HomePage() {
                                 <div className="plan-header">
                                     <h3>${plan.name}</h3>
                                     <div className="price">
-                                        ${plan.price}<span>/mes</span>
+                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
                                     </div>
                                 </div>
                                 <div className="plan-features">
@@ -129,7 +129,7 @@ function HomePage() {
                                 <div className="plan-header">
                                     <h3>${plan.name}</h3>
                                     <div className="price">
-                                        ${plan.price}<span>/mes</span>
+                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
                                     </div>
                                 </div>
                                 <div className="plan-features">
@@ -156,7 +156,7 @@ function HomePage() {
                                 <div className="plan-header">
                                     <h3>${plan.name}</h3>
                                     <div className="price">
-                                        ${plan.price}<span>/mes</span>
+                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
                                     </div>
                                 </div>
                                 <div className="plan-features">
