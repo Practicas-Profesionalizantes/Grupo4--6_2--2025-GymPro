@@ -110,11 +110,11 @@ function SubscriptionPage() {
                                     <input type="text" placeholder="Apellido" name="lastname" required />
                                 </div>
                                 <div className="form-row">
-                                    <select name="documentoTipo" required>
+                                    <select name="documentType" required>
                                         <option disabled value="">Tipo De Documento</option>
                                         <option value="dni">DNI</option>
                                     </select>
-                                    <input type="number" name="documentoNumero" placeholder="phone" required />
+                                    <input type="number" name="documentNumber" placeholder="" required />
                                 </div>
                                 <div className="form-row">
                                     <select name="sex" required>
@@ -122,7 +122,7 @@ function SubscriptionPage() {
                                         <option value="m">Masculino</option>
                                         <option value="f">Femenino</option>
                                     </select>
-                                    <input type="date" name="nacimiento" required />
+                                    <input type="date" name="dateOfBirth" required />
                                 </div>
                                 <input type="email" name="email" placeholder="Email" required />
                                 <input type="number" name="emergencyContact" placeholder="Contacto De Emergencia" required />
@@ -134,8 +134,8 @@ function SubscriptionPage() {
                                     <input type="text" name="floor" placeholder="Dpto/Lote" />
                                 </div>
                                 <div className="form-row">
-                                    <input type="text" name="ciudad" placeholder="Ciudad" required />
-                                    <select name="city" required>
+                                    <input type="text" name="city" placeholder="Ciudad" required />
+                                    <select name="province" required>
                                         <option disabled value="">Seleccionar Provincia</option>
                                         <option value="C">CABA</option>
                                         <option value="B">PROVINCIA DE BUENOS AIRES</option>

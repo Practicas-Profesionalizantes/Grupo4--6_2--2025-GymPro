@@ -51,16 +51,19 @@ module.exports = (router, database, mpClient) =>
                         }
                     },
                     metadata: {
-                        // user_id: userData.id,
-                        // first_name: body.name,
-                        // last_name: body.lastname,
-                        // email: results_user[0].mail,
-                        // phone: body.phone,
-                        // date: body.date,
-                        // time: body.time,
-                        // players: body.players,
-                        // plan_id: plan.id,
-                        // room_id: room.id
+                        plan: selected_plan.id,
+                        user: {
+                            documentType: body.documentType,
+                            documentNumber: body.documentNumber,
+                            sex: body.sex,
+                            dateOfBirth: body.dateOfBirth,
+                            emergencyContact: body.emergencyContact,
+                            address: body.address,
+                            addressNumber: body.addressNumber,
+                            floor: body.floor,
+                            city: body.city,
+                            province: body.province
+                        }
                     }
                 }
             })
