@@ -1,18 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Users, CreditCard, UserPlus, BarChart3, Settings, LogOut } from "lucide-react"
+import { Users, CreditCard, UserPlus, BarChart3, Settings, LogOut, Menu } from "lucide-react"
 import UserManagement from "./components/UserManagement"
 import PlanManagement from "./components/PlanManagement"
 import CreateUser from "./components/CreateUser"
@@ -21,22 +10,22 @@ import "./AdminDashboard.css"
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "Panel General",
     icon: BarChart3,
     id: "dashboard",
   },
   {
-    title: "Gestión de Usuarios",
+    title: "Usuarios",
     icon: Users,
     id: "users",
   },
   {
-    title: "Gestión de Planes",
+    title: "Planes",
     icon: CreditCard,
     id: "plans",
   },
   {
-    title: "Crear Usuario",
+    title: "Administradores",
     icon: UserPlus,
     id: "create-user",
   },
@@ -47,48 +36,54 @@ const menuItems = [
   },
 ]
 
-function AdminSidebar({ activeSection, setActiveSection }) {
+function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen }) {
   return (
-    <Sidebar>
-      <SidebarHeader className="admin-sidebar-header">
-        <div className="admin-logo">
-          <img src="/src/assets/images/logo.png" alt="MundoForza Admin" />
-          <h3>Admin Panel</h3>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {menuItems.map((item) => (
-            <SidebarMenuItem key={item.id}>
-              <SidebarMenuButton asChild isActive={activeSection === item.id} onClick={() => setActiveSection(item.id)}>
-                <button className="admin-menu-button">
-                  <item.icon />
-                  <span>{item.title}</span>
-                </button>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+    <>
+      {/* Mobile overlay */}
+      {isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />}
 
-        <div className="admin-sidebar-footer">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <button className="admin-menu-button logout-button">
-                  <LogOut />
-                  <span>Cerrar Sesión</span>
-                </button>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+      {/* Sidebar */}
+      <div className={`admin-sidebar ${isOpen ? "open" : ""}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <div className="logo-icon">MF</div>
+            <div className="logo-text">
+              <h3>MUNDOFORZA</h3>
+              <p>Panel de Administración</p>
+            </div>
+          </div>
         </div>
-      </SidebarContent>
-    </Sidebar>
+
+        <nav className="sidebar-nav">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                setActiveSection(item.id)
+                setIsOpen(false)
+              }}
+              className={`nav-item ${activeSection === item.id ? "active" : ""}`}
+            >
+              <item.icon size={20} />
+              <span>{item.title}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="nav-item logout">
+            <LogOut size={20} />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      </div>
+    </>
   )
 }
 
 function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("dashboard")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const renderContent = () => {
     switch (activeSection) {
@@ -114,21 +109,28 @@ function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <SidebarProvider>
-        <AdminSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-        <SidebarInset>
-          <header className="admin-header">
-            <SidebarTrigger />
-            <div className="admin-header-content">
-              <h1>Panel de Administración</h1>
-              <div className="admin-user-info">
-                <span>Administrador</span>
-              </div>
+      <AdminSidebar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+      />
+
+      <div className="main-content">
+        <header className="main-header">
+          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
+            <Menu size={24} />
+          </button>
+          <div className="header-content">
+            <h1>Panel de Administración</h1>
+            <div className="user-info">
+              <span>Administrador</span>
             </div>
-          </header>
-          <main className="admin-main">{renderContent()}</main>
-        </SidebarInset>
-      </SidebarProvider>
+          </div>
+        </header>
+
+        <main className="main-body">{renderContent()}</main>
+      </div>
     </div>
   )
 }

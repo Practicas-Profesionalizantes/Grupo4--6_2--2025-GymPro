@@ -1,116 +1,121 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, CreditCard, TrendingUp, Calendar } from "lucide-react"
+import { Users, TrendingUp, Calendar, Settings } from "lucide-react"
 
 function Dashboard() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeUsers: 0,
-    totalRevenue: 0,
     expiringMemberships: 0,
+    activePlans: 0,
+    administrators: 0,
   })
 
   useEffect(() => {
     // Simular carga de estadísticas
     setStats({
-      totalUsers: 1247,
-      activeUsers: 1156,
-      totalRevenue: 2450000,
+      totalUsers: 142,
+      activeUsers: 142,
       expiringMemberships: 23,
+      activePlans: 4,
+      administrators: 3,
     })
   }, [])
 
   return (
     <div className="admin-section">
       <div className="dashboard-header">
-        <h2>Dashboard</h2>
-        <p>Resumen general del gimnasio</p>
+        <h2>Panel General</h2>
+        <p>Resumen de la actividad del gimnasio</p>
       </div>
 
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon users">
-            <Users />
+          <div className="stat-header">
+            <p className="stat-title">Usuarios Activos</p>
+            <Users className="stat-icon" />
           </div>
-          <div className="stat-content">
-            <h3>{stats.totalUsers.toLocaleString()}</h3>
-            <p>Total Usuarios</p>
-            <span className="stat-change positive">+12% este mes</span>
-          </div>
+          <h3 className="stat-value">{stats.totalUsers}</h3>
+          <span className="stat-change positive">+12% desde el último mes</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon active">
-            <TrendingUp />
+          <div className="stat-header">
+            <p className="stat-title">Membresías por Vencer</p>
+            <Calendar className="stat-icon" />
           </div>
-          <div className="stat-content">
-            <h3>{stats.activeUsers.toLocaleString()}</h3>
-            <p>Usuarios Activos</p>
-            <span className="stat-change positive">+8% este mes</span>
-          </div>
+          <h3 className="stat-value">{stats.expiringMemberships}</h3>
+          <span className="stat-change neutral">+5 desde el último mes</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon revenue">
-            <CreditCard />
+          <div className="stat-header">
+            <p className="stat-title">Planes Activos</p>
+            <Settings className="stat-icon" />
           </div>
-          <div className="stat-content">
-            <h3>${stats.totalRevenue.toLocaleString()}</h3>
-            <p>Ingresos Mensuales</p>
-            <span className="stat-change positive">+15% este mes</span>
-          </div>
+          <h3 className="stat-value">{stats.activePlans}</h3>
+          <span className="stat-change neutral">0 desde el último mes</span>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon expiring">
-            <Calendar />
+          <div className="stat-header">
+            <p className="stat-title">Administradores</p>
+            <TrendingUp className="stat-icon" />
           </div>
-          <div className="stat-content">
-            <h3>{stats.expiringMemberships}</h3>
-            <p>Membresías por Vencer</p>
-            <span className="stat-change neutral">Próximos 7 días</span>
-          </div>
+          <h3 className="stat-value">{stats.administrators}</h3>
+          <span className="stat-change positive">+1 desde el último mes</span>
         </div>
       </div>
 
       <div className="dashboard-charts">
-        <div className="chart-container">
-          <h3>Ingresos de los Últimos 6 Meses</h3>
-          <div className="chart-placeholder">
-            <p>Gráfico de ingresos mensuales</p>
-          </div>
-        </div>
-
         <div className="recent-activity">
           <h3>Actividad Reciente</h3>
           <div className="activity-list">
             <div className="activity-item">
-              <div className="activity-icon">👤</div>
-              <div className="activity-content">
-                <p>
-                  <strong>Juan Pérez</strong> se registró
-                </p>
-                <span>Hace 2 horas</span>
+              <div className="activity-info">
+                <h4>María González se registró</h4>
+                <p>Plan Premium - Hace 2 horas</p>
               </div>
             </div>
             <div className="activity-item">
-              <div className="activity-icon">💳</div>
-              <div className="activity-content">
-                <p>
-                  <strong>María García</strong> renovó su membresía
-                </p>
-                <span>Hace 4 horas</span>
+              <div className="activity-info">
+                <h4>Juan Pérez renovó membresía</h4>
+                <p>Plan Básico - Hace 4 horas</p>
               </div>
             </div>
             <div className="activity-item">
-              <div className="activity-icon">🏋️</div>
-              <div className="activity-content">
-                <p>
-                  <strong>Carlos López</strong> registró ingreso
-                </p>
-                <span>Hace 6 horas</span>
+              <div className="activity-info">
+                <h4>Ana Martín canceló plan</h4>
+                <p>Plan Premium - Hace 1 día</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="recent-activity">
+          <h3>Próximos Vencimientos</h3>
+          <div className="activity-list">
+            <div className="activity-item">
+              <div className="activity-info">
+                <h4>Carlos López</h4>
+                <p>Vence en 3 días</p>
+              </div>
+              <span className="activity-status urgent">Urgente</span>
+            </div>
+            <div className="activity-item">
+              <div className="activity-info">
+                <h4>Laura García</h4>
+                <p>Vence en 7 días</p>
+              </div>
+              <span className="activity-status warning">Próximo</span>
+            </div>
+            <div className="activity-item">
+              <div className="activity-info">
+                <h4>Roberto Silva</h4>
+                <p>Vence en 14 días</p>
+              </div>
+              <span className="activity-status success">OK</span>
             </div>
           </div>
         </div>
