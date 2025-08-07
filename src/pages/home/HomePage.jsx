@@ -93,87 +93,35 @@ function HomePage() {
                     <p>Encuentra el plan perfecto para tu camino fitness</p>
                 </div>
                 <div className="plans-container">
-                    {(() => {
-                        const plan = plans.find(e => e.id === 1);
-                        if (!plan) return null;
-
-                        return (
-                            <div className="plan-card basic">
-                                <div className="plan-header">
-                                    <h3>${plan.name}</h3>
-                                    <div className="price">
-                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
-                                    </div>
+                    {plans.map((plan, index) => (
+                        <div className="plan-card basic">
+                            {plan.highlighted ? <div className="plan-tag">Más Popular</div> : null}
+                            <div className="plan-header">
+                                <h3>{plan.name}</h3>
+                                <div className="price">
+                                    {
+                                        !(plan.discount && plan.discount !== 0) ? 
+                                        (<>
+                                            ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
+                                        </>) 
+                                        : 
+                                        (<>
+                                            <span className="prePrice">${plan.price.toLocaleString('es-AR')}/mes</span> ${ (plan.price - (plan.price * (plan.discount / 100))).toLocaleString('es-AR') }<span>/mes</span>
+                                        </>)
+                                    }
                                 </div>
-                                <div className="plan-features">
-                                    <ul>
-                                        <li>Acceso al gimnasio</li>
-                                        <li>Equipamiento estándar</li>
-                                        <li>Acceso a vestuarios</li>
-                                        <li>2 pases para invitados al mes</li>
-                                        <li>Planes de entrenamiento online</li>
-                                    </ul>
-                                </div>
-                                <Link to="/subscription" className="plan-button">Elegir Plan</Link>
                             </div>
-                        );
-                    })()}
-
-                    {(() => {
-                        const plan = plans.find(e => e.id === 2);
-                        if (!plan) return null;
-
-                        return (
-                            <div className="plan-card premium">
-                                <div className="plan-tag">Más Popular</div>
-                                <div className="plan-header">
-                                    <h3>${plan.name}</h3>
-                                    <div className="price">
-                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
-                                    </div>
-                                </div>
-                                <div className="plan-features">
-                                    <ul>
-                                        <li>Acceso 24/7 al gimnasio</li>
-                                        <li>Todo el equipamiento</li>
-                                        <li>4 clases grupales al mes</li>
-                                        <li>1 sesión de entrenamiento personal</li>
-                                        <li>Evaluación de estado físico</li>
-                                        <li>Acceso a sauna y spa</li>
-                                    </ul>
-                                </div>
-                                <Link to="/subscription" className="plan-button highlighted">Elegir Plan</Link>
+                            <div className="plan-features">
+                                <ul>
+                                    {plan.features.map((feature, idx) => (
+                                        <li>{feature}</li>
+                                    ))}
+                                </ul>
                             </div>
-                        );
-                    })()}
-
-                    {(() => {
-                        const plan = plans.find(e => e.id === 3);
-                        if (!plan) return null;
-
-                        return (
-                            <div className="plan-card elite">
-                                <div className="plan-header">
-                                    <h3>${plan.name}</h3>
-                                    <div className="price">
-                                        ${plan.price.toLocaleString('es-AR')}<span>/mes</span>
-                                    </div>
-                                </div>
-                                <div className="plan-features">
-                                    <ul>
-                                        <li>Todo lo del Plan Premium</li>
-                                        <li>Clases grupales ilimitadas</li>
-                                        <li>4 sesiones personales</li>
-                                        <li>Asesoría nutricional</li>
-                                        <li>Servicio de locker VIP</li>
-                                        <li>Acceso a todas las sedes</li>
-                                    </ul>
-                                </div>
-                                <Link to="/subscription" className="plan-button">Elegir Plan</Link>
-                            </div>
-                        );
-                    })()}
-                 </div>
+                            <Link to="/subscription" className={"plan-button " + (plan.highlighted && "highlighted")}>Elegir Plan</Link>
+                        </div>
+                    ))}
+                </div>
             </section>
 
             {/* Entrenamiento */}

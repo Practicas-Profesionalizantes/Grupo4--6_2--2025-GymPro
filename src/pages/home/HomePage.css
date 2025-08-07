@@ -142,11 +142,13 @@ section {
 }
 
 .plan-card {
+    display: flex;
+    position: relative;
     background-color: #2a2a2a;
     border-radius: 10px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
+    flex-direction: column;
 }
 
 .plan-card:hover {
@@ -188,6 +190,7 @@ section {
 
 .plan-features {
     padding: 2rem;
+    flex-grow: 1;
 }
 
 .plan-features ul {
@@ -216,6 +219,7 @@ section {
     color: white;
     text-decoration: none;
     transition: all 0.3s ease;
+    margin-top: auto;
 }
 
 .plan-button:hover {
