@@ -27,67 +27,20 @@ function SubscriptionPage() {
                         <section className="purchase-section">
                             <h1>SELECCIONÁ TU PLAN</h1>
                             <p>¡ELEGÍ EL ABONO QUE SE ADAPTE A VOS!</p>
-
-                                <div className="plans">
-                                    {(() => {
-                                        const plan = plans.find(e => e.id === 1);
-                                        if (!plan) return null;
-
-                                        return (
-                                            <PlanOption
-                                                id={1}
-                                                title={plan.name}
-                                                price={plan.price}
-                                                extraInfo={[
-                                                    `DÉBITO AUTOMÁTICO <span>(Permanencia mínima de 3 meses)</span>`,
-                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
-                                                ]}
-                                                discount={plan.discount}
-                                                selected={selectedPlanId}
-                                                onClick={setSelectedPlanId}
-                                            ></PlanOption>
-                                        );
-                                    })()}
-                                    {(() => {
-                                        const plan = plans.find(e => e.id === 2);
-                                        if (!plan) return null;
-                                        
-                                        return (
-                                            <PlanOption
-                                                id={2}
-                                                title={`${plan.name} + MULTISEDE`}
-                                                price={plan.price}
-                                                extraInfo={[
-                                                    "UN PAGO CON DÉBITO",
-                                                    `¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $${Math.round(plan.price/6).toLocaleString('es-AR')})</span>`,
-                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
-                                                ]}
-                                                selected={selectedPlanId}
-                                                onClick={setSelectedPlanId}
-                                            ></PlanOption>
-                                        );
-                                    })()}
-                                    {(() => {
-                                        const plan = plans.find(e => e.id === 3);
-                                        if (!plan) return null;
-
-                                        return (
-                                            <PlanOption
-                                                id={3}
-                                                title={`${plan.name} + MULTISEDE`}
-                                                price={plan.price}
-                                                extraInfo={[
-                                                    "UN PAGO CON DÉBITO",
-                                                    `¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de $${Math.round(plan.price/6).toLocaleString('es-AR')})</span>`,
-                                                    plan.inscription ? `<div class='inscription-bar'><p>INSCRIPCIÓN: ${plan.inscription}</p></div>` : null
-                                                ]}
-                                                selected={selectedPlanId}
-                                                onClick={setSelectedPlanId}
-                                            ></PlanOption>
-                                        );
-                                    })()}
-                                </div>
-
+                            <div className="plans">
+                                {plans.map((plan, index) => (
+                                    <PlanOption
+                                        id={plan.id}
+                                        title={plan.name}
+                                        price={plan.price}
+                                        inscription={plan.inscription}
+                                        discount={plan.discount}
+                                        extraInfo={plan.extraInfo}
+                                        selected={selectedPlanId}
+                                        onClick={setSelectedPlanId}
+                                    ></PlanOption>
+                                ))}
+                            </div>
                             <div className="terms">
                                 <label>
                                     <input type="checkbox" required />

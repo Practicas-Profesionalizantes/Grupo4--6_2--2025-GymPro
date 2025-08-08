@@ -73,7 +73,7 @@ header {
     position: absolute;
     top: 25px;
     left: 25px;
-    width: 28%;
+    width: 42%;
     height: 2px;
     background: var(--primary-color);
     z-index: 1;
