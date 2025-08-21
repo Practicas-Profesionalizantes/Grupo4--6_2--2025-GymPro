@@ -4,7 +4,6 @@ const { Payment } = require('mercadopago');
 module.exports = (router, database, mpClient) => {
     router.get('/payment/success', async (req, res) => {
         const { payment_id } = req.query;
-        console.log("Query recibido:", req.query);
 
         if (payment_id === undefined) return res.status(400).send("PAYMENT_ID_MISSING");
 
@@ -26,7 +25,7 @@ module.exports = (router, database, mpClient) => {
                     `INSERT INTO users (email, password, name, lastname) VALUES (?, ?, ?, ?)`,
                     [metadata.user.email, metadata.user.password, metadata.user.name, metadata.user.surname]
                 )
-                console.log("Usuario insertado:", inserted_user);
+
                 userId = inserted_user.insertId;
             }
             else
