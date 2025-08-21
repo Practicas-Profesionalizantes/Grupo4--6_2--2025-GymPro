@@ -20,7 +20,7 @@ function SubscriptionPage() {
     return (
     <>
         <div class="container">
-            <HeaderProcessBar />
+            <HeaderProcessBar status={selectedPlanId ? 2 : 1} />
             <main>
                 <form action={`${baseURL}/api/payment/create`} method="post">
                     <div className="split-layout">
@@ -78,6 +78,7 @@ function SubscriptionPage() {
                                     <input type="date" name="dateOfBirth" required />
                                 </div>
                                 <input type="email" name="email" placeholder="Email" required />
+                                <input type="password" name="password" placeholder="Password" required />
                                 <input type="number" name="emergencyContact" placeholder="Contacto De Emergencia" required />
 
                                 <h3>Domicilio</h3>

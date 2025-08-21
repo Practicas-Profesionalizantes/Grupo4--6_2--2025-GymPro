@@ -73,11 +73,19 @@ header {
     position: absolute;
     top: 25px;
     left: 25px;
-    width: 42%;
+    width: 0%;
     height: 2px;
     background: var(--primary-color);
     z-index: 1;
     transition: width 0.3s ease;
+}
+
+.progress-bar.step2::after {
+    width: 42%;
+}
+
+.progress-bar.step3::after {
+    width: 90%;
 }
 
 .step {

@@ -1,9 +1,9 @@
 const moment = require('moment-timezone');
 const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
 const { Preference } = require('mercadopago');
 
-module.exports = (router, database, mpClient) => 
-{
+module.exports = (router, database, mpClient) => {
     router.post('/payment/create', async (req, res) => {
         const con = mysql.createConnection(database);
         const preference = new Preference(mpClient);
@@ -14,6 +14,8 @@ module.exports = (router, database, mpClient) =>
             console.log(results_plans)
             const selected_plan = results_plans[0];
 
+            const passwordHash = await bcrypt.hash(body.password, 10);
+
             const newPayment = await preference.create({
                 body: {
                     expires: true,
@@ -21,9 +23,9 @@ module.exports = (router, database, mpClient) =>
                     expiration_date_to: moment().tz('America/Argentina/Buenos_Aires').add(30, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
                     auto_return: "all",
                     back_urls: {
-                        success:  req.headers.host + "/payment/success",
-                        pending:  req.headers.host + "/payment/pending",
-                        failure:  req.headers.host + "/payment/failed"
+                        success: req.headers.host + "/api/payment/success",
+                        pending: req.headers.host + "/payment/pending",
+                        failure: req.headers.host + "/api/payment/failed"
                     },
                     payment_methods: {
                         excluded_payment_methods: [],
@@ -53,6 +55,14 @@ module.exports = (router, database, mpClient) =>
                     metadata: {
                         plan: selected_plan.id,
                         user: {
+                            name: body.name,
+                            surname: body.lastname,
+                            email: body.email,
+                            password: passwordHash,
+                            phone: {
+                                area_code: "54",
+                                number: body.phone
+                            },
                             documentType: body.documentType,
                             documentNumber: body.documentNumber,
                             sex: body.sex,
