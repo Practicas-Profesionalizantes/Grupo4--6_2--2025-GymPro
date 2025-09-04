@@ -19,6 +19,20 @@
 CREATE DATABASE IF NOT EXISTS `gympro` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
 USE `gympro`;
 
+-- Volcando estructura para tabla gympro.log_access
+CREATE TABLE IF NOT EXISTS `log_access` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL DEFAULT 0,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `FK__users` (`user`),
+  CONSTRAINT `FK__users` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Volcando datos para la tabla gympro.log_access: ~1 rows (aproximadamente)
+REPLACE INTO `log_access` (`id`, `user`, `date`) VALUES
+	(1, 2, '2025-09-04 14:58:51');
+
 -- Volcando estructura para tabla gympro.plans
 CREATE TABLE IF NOT EXISTS `plans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -48,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `plans_features` (
   CONSTRAINT `FK__plans` FOREIGN KEY (`plan`) REFERENCES `plans` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla gympro.plans_features: ~17 rows (aproximadamente)
+-- Volcando datos para la tabla gympro.plans_features: ~15 rows (aproximadamente)
 REPLACE INTO `plans_features` (`id`, `plan`, `feature`) VALUES
 	(1, 1, 'Acceso al gimnasio'),
 	(2, 1, 'Equipamiento estándar'),
