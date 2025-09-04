@@ -6,7 +6,6 @@ const express = require('express');
 const functions = require('./functions/functions');
 const auth = require('./functions/auth');
 
-// Step 1: Import the parts of the module you want to use
 const { MercadoPagoConfig } = require('mercadopago');
 
 // Database info
@@ -55,7 +54,7 @@ const isAllowed = async (req, res, next) => {
     });
 };
 
-routers.admin.router.use(isAuthenticated, isAllowed);
+//routers.admin.router.use(isAuthenticated, isAllowed);
 
 // Pages loader
 function loadPages(path, router) {
