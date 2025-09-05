@@ -2,20 +2,28 @@
 
 import { useState, useEffect } from "react"
 import { Search, Edit, ToggleLeft, ToggleRight, LogIn } from "lucide-react"
-import axios from 'axios';
+import axios from "axios"
 
 function UserManagement() {
-    const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
+    const baseURL = `${window.location.protocol}//${window.location.hostname}:80`
 
     const [users, setUsers] = useState([])
+    const [plans, setPlans] = useState([])
+
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedUser, setSelectedUser] = useState(null)
     const [showEditModal, setShowEditModal] = useState(false)
+    const [saving, setSaving] = useState(false)
 
     useEffect(() => {
-        axios.get(`${baseURL}/api/admin/users/get`)
-            .then(res => setUsers(res.data.data))
-            .catch(err => console.error(err));
+        axios
+            .get(`${baseURL}/api/plans/get`)
+            .then((res) => setPlans(res.data.data))
+            .catch((err) => console.error(err))
+        axios
+            .get(`${baseURL}/api/admin/users/get`)
+            .then((res) => setUsers(res.data.data))
+            .catch((err) => console.error(err))
     }, [baseURL])
 
     const filteredUsers = users.filter(
@@ -25,33 +33,29 @@ function UserManagement() {
     )
 
     const toggleUserStatus = (userId) => {
-        const user = users.find(u => u.id === userId);
-        const newStatus = user.active === 1 ? 0 : 1;
+        const user = users.find((u) => u.id === userId)
+        const newStatus = user.active === 1 ? 0 : 1
 
-        axios.post(`${baseURL}/api/admin/users/change-active`, {
-            user: userId,
-            active: newStatus
-        })
-        .then(res => {
-            setUsers(
-                users.map(u =>
-                    u.id === userId ? { ...u, active: newStatus } : u
-                )
-            )
-        })
-        .catch(err => console.error(err));
+        axios
+            .post(`${baseURL}/api/admin/users/change-active`, {
+                user: userId,
+                active: newStatus,
+            })
+            .then(() => {
+                setUsers(users.map((u) => (u.id === userId ? { ...u, active: newStatus } : u)))
+            })
+            .catch((err) => console.error(err))
     }
 
     const registerAccess = (userId) => {
-        
-        axios.post(`${baseURL}/api/admin/users/register-access`, {
-            user: userId
-        })
-        .then(res => {
-            console.log(res.data)
-            setUsers(users.map((user) => (user.id === userId ? { ...user, last_access: res.data.last_access } : user)))
-        })
-        .catch(err => console.error(err));
+        axios
+            .post(`${baseURL}/api/admin/users/register-access`, {
+                user: userId,
+            })
+            .then((res) => {
+                setUsers(users.map((user) => (user.id === userId ? { ...user, last_access: res.data.last_access } : user)))
+            })
+            .catch((err) => console.error(err))
     }
 
     const openEditModal = (user) => {
@@ -59,10 +63,52 @@ function UserManagement() {
         setShowEditModal(true)
     }
 
-    const saveUserChanges = () => {
-        setUsers(users.map((user) => (user.id === selectedUser.id ? selectedUser : user)))
-        setShowEditModal(false)
-        setSelectedUser(null)
+    const saveUserChanges = async () => {
+        if (!selectedUser) return
+        setSaving(true)
+        try {
+            // ajustá la ruta si tu backend usa otra
+            const { data } = await axios.put(`${baseURL}/api/admin/users/edit`, {
+                id: selectedUser.id,
+                name: selectedUser.name,
+                email: selectedUser.email,
+                phone: selectedUser.phone,
+                dniType: selectedUser.dniType,
+                dni: selectedUser.dni,
+                plan: selectedUser.plan,
+                expire: selectedUser.expire,
+            })
+
+            // si el server confirma ok, actualizamos en cliente
+            if (data?.success !== false) {
+                setUsers((prev) =>
+                    prev.map((u) =>
+                        u.id === selectedUser.id
+                            ? {
+                                ...u,
+                                name: selectedUser.name,
+                                email: selectedUser.email,
+                                phone: selectedUser.phone,
+                                dniType: selectedUser.dniType,
+                                dni: selectedUser.dni,
+                                plan: selectedUser.plan,
+                                plan_name:
+                                    plans.find((p) => String(p.id) === String(selectedUser.plan))?.name ?? u.plan_name,
+                                expire: selectedUser.expire?.includes("T")
+                                    ? selectedUser.expire
+                                    : new Date(selectedUser.expire).toISOString(),
+                            }
+                            : u,
+                    ),
+                )
+                setShowEditModal(false)
+                setSelectedUser(null)
+            }
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setSaving(false)
+        }
     }
 
     const getStatusBadge = (status) => {
@@ -129,12 +175,14 @@ function UserManagement() {
                                 </td>
                                 <td>{getStatusBadge(user.active)}</td>
                                 <td>
-                                    <div className="expiration-info">
-                                        {getExpirationStatus(user.expire)}
-                                    </div>
+                                    <div className="expiration-info">{getExpirationStatus(user.expire)}</div>
                                 </td>
                                 <td>
-                                    {(new Date(user.last_access)).toLocaleDateString() + ' ' + (new Date(user.last_access)).toLocaleTimeString()}
+                                    {user.last_access
+                                        ? new Date(user.last_access).toLocaleDateString() +
+                                        " " +
+                                        new Date(user.last_access).toLocaleTimeString()
+                                        : "—"}
                                 </td>
                                 <td>
                                     <div className="action-buttons">
@@ -142,17 +190,13 @@ function UserManagement() {
                                             <Edit size={16} />
                                         </button>
                                         <button
-                                            className={`action-btn toggle ${user.active === 1 ? 'active' : 'inactive'}`}
+                                            className={`action-btn toggle ${user.active === 1 ? "active" : "inactive"}`}
                                             onClick={() => toggleUserStatus(user.id)}
                                             title={user.active === 1 ? "Desactivar" : "Activar"}
                                         >
                                             {user.active === 1 ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
                                         </button>
-                                        <button
-                                            className="action-btn access"
-                                            onClick={() => registerAccess(user.id)}
-                                            title="Registrar ingreso"
-                                        >
+                                        <button className="action-btn access" onClick={() => registerAccess(user.id)} title="Registrar ingreso">
                                             <LogIn size={16} />
                                         </button>
                                     </div>
@@ -163,7 +207,6 @@ function UserManagement() {
                 </table>
             </div>
 
-            {/* Modal de Edición */}
             {showEditModal && selectedUser && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -183,6 +226,14 @@ function UserManagement() {
                                 />
                             </div>
                             <div className="form-group">
+                                <label>Apellido</label>
+                                <input
+                                    type="text"
+                                    value={selectedUser.lastname}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, lastname: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
                                 <label>Email</label>
                                 <input
                                     type="email"
@@ -194,36 +245,56 @@ function UserManagement() {
                                 <label>Teléfono</label>
                                 <input
                                     type="text"
-                                    value={selectedUser.phone}
+                                    value={selectedUser.phone ?? ""}
                                     onChange={(e) => setSelectedUser({ ...selectedUser, phone: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>DNI Tipo</label>
+                                <select
+                                    value={selectedUser.dniType ?? "dni"}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, dniType: e.target.value })}
+                                >
+                                    <option value="dni">DNI</option>
+                                    <option value="passport">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>DNI</label>
+                                <input
+                                    type="text"
+                                    value={selectedUser.dni ?? ""}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, dni: e.target.value })}
                                 />
                             </div>
                             <div className="form-group">
                                 <label>Plan</label>
                                 <select
-                                    value={selectedUser.plan}
+                                    value={selectedUser.plan ?? ""}
                                     onChange={(e) => setSelectedUser({ ...selectedUser, plan: e.target.value })}
                                 >
-                                    <option value="Forza Flex">Forza Flex</option>
-                                    <option value="Forza Premium">Forza Premium</option>
-                                    <option value="Forza Elite">Forza Elite</option>
+                                    {plans.map((plan) => (
+                                        <option key={plan.id} value={plan.id}>
+                                            {plan.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="form-group">
                                 <label>Fecha de Vencimiento</label>
                                 <input
                                     type="date"
-                                    value={selectedUser.expirationDate}
-                                    onChange={(e) => setSelectedUser({ ...selectedUser, expirationDate: e.target.value })}
+                                    value={(selectedUser.expire ?? "").split("T")[0]}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, expire: e.target.value })}
                                 />
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                            <button className="btn-secondary" onClick={() => setShowEditModal(false)} disabled={saving}>
                                 Cancelar
                             </button>
-                            <button className="btn-primary" onClick={saveUserChanges}>
-                                Guardar Cambios
+                            <button className="btn-primary" onClick={saveUserChanges} disabled={saving}>
+                                {saving ? "Guardando..." : "Guardar Cambios"}
                             </button>
                         </div>
                     </div>
