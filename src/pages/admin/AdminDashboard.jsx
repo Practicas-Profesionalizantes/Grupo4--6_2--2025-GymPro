@@ -28,12 +28,7 @@ const menuItems = [
     title: "Administradores",
     icon: UserPlus,
     id: "create-user",
-  },
-  {
-    title: "Configuración",
-    icon: Settings,
-    id: "settings",
-  },
+  }
 ]
 
 function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen }) {
@@ -95,13 +90,6 @@ function AdminDashboard() {
         return <PlanManagement />
       case "create-user":
         return <CreateUser />
-      case "settings":
-        return (
-          <div className="admin-section">
-            <h2>Configuración</h2>
-            <p>Próximamente...</p>
-          </div>
-        )
       default:
         return <Dashboard />
     }

@@ -16,42 +16,7 @@ function PlanManagement() {
         axios.get(`${baseURL}/api/plans/get`)
             .then(res => setPlans(res.data.data))
             .catch(err => console.error(err));
-
-        // // Simular carga de planes
-        // const mockPlans = [
-        //     {
-        //         id: 1,
-        //         name: "Forza Flex",
-        //         price: 25990,
-        //         discount: 15,
-        //         inscription: 5000,
-        //         description: "Plan básico con acceso al gimnasio",
-        //         features: ["Acceso al gimnasio", "Equipamiento estándar", "Acceso a vestuarios"],
-        //         active: true,
-        //     },
-        //     {
-        //         id: 2,
-        //         name: "Forza Premium",
-        //         price: 38990,
-        //         discount: 0,
-        //         inscription: 0,
-        //         description: "Plan premium con beneficios adicionales",
-        //         features: ["Acceso 24/7", "Clases grupales", "Entrenamiento personal", "Sauna"],
-        //         active: true,
-        //     },
-        //     {
-        //         id: 3,
-        //         name: "Forza Elite",
-        //         price: 55990,
-        //         discount: 0,
-        //         inscription: 0,
-        //         description: "Plan elite con todos los beneficios",
-        //         features: ["Todo lo del Premium", "Asesoría nutricional", "Acceso multisede", "Locker VIP"],
-        //         active: true,
-        //     },
-        // ]
-        // setPlans(mockPlans)
-    }, [])
+    }, [baseURL]);
 
     const openEditModal = (plan = null) => {
         if (plan) {
@@ -59,7 +24,7 @@ function PlanManagement() {
             setIsCreating(false)
         } else {
             setSelectedPlan({
-                id: Date.now(),
+                id: null,
                 name: "",
                 price: 0,
                 discount: 0,
@@ -67,30 +32,66 @@ function PlanManagement() {
                 description: "",
                 features: [""],
                 active: true,
+                highlighted: 0,
             })
             setIsCreating(true)
         }
         setShowEditModal(true)
     }
 
-    const savePlan = () => {
-        if (isCreating) {
-            setPlans([...plans, selectedPlan])
-        } else {
-            setPlans(plans.map((plan) => (plan.id === selectedPlan.id ? selectedPlan : plan)))
+    const savePlan = async () => {
+        try {
+            if (isCreating) {
+                const res = await axios.post(`${baseURL}/api/admin/plans/create`, selectedPlan)
+                setPlans([...plans, res.data])
+            } else {
+                await axios.post(`${baseURL}/api/admin/plans/edit`, selectedPlan)
+                setPlans(plans.map(p => p.id === selectedPlan.id ? selectedPlan : p))
+            }
+
+            setShowEditModal(false)
+            setSelectedPlan(null)
+        } catch (err) {
+            console.error(err)
         }
-        setShowEditModal(false)
-        setSelectedPlan(null)
     }
 
-    const deletePlan = (planId) => {
-        if (window.confirm("¿Estás seguro de que quieres eliminar este plan?")) {
-            setPlans(plans.filter((plan) => plan.id !== planId))
+    const deletePlan = async (planId) => {
+        const confirmDelete = window.confirm("¿Seguro que querés eliminar este plan?");
+        if (!confirmDelete) return;
+
+        try {
+            const res = await fetch(`/api/admin/plans/delete/${planId}`, {
+                method: "DELETE",
+            });
+
+            if (!res.ok) {
+                throw new Error("Error al eliminar plan");
+            }
+
+            const deletedPlan = await res.json();
+
+            setPlans((prev) => prev.filter((p) => p.id !== deletedPlan.id));
+            alert(`Plan "${deletedPlan.name}" eliminado correctamente`);
+        } catch (error) {
+            console.error("Error eliminando plan:", error);
+            alert("No se pudo eliminar el plan");
         }
     }
 
     const togglePlanStatus = (planId) => {
-        setPlans(plans.map((plan) => (plan.id === planId ? { ...plan, active: !plan.active } : plan)))
+        const plan = plans.find((p) => p.id === planId)
+        const newStatus = plan.active ? 0 : 1
+
+        axios
+            .post(`${baseURL}/api/admin/plans/change-active`, {
+                user: planId,
+                active: newStatus,
+            })
+            .then(() => {
+                setPlans(plans.map((p) => (p.id === planId ? { ...p, active: newStatus } : p)))
+            })
+            .catch((err) => console.error(err))
     }
 
     const addFeature = () => {
@@ -133,7 +134,11 @@ function PlanManagement() {
                             <h3>{plan.name}</h3>
                             <div className="plan-status">
                                 <label className="toggle-switch">
-                                    <input type="checkbox" checked={plan.active} onChange={() => togglePlanStatus(plan.id)} />
+                                    <input
+                                        type="checkbox"
+                                        checked={plan.active}
+                                        onChange={() => togglePlanStatus(plan.id, plan.active)}
+                                    />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
@@ -172,7 +177,6 @@ function PlanManagement() {
                 ))}
             </div>
 
-            {/* Modal de Edición/Creación */}
             {showEditModal && selectedPlan && (
                 <div className="modal-overlay">
                     <div className="modal-content large">
@@ -223,14 +227,25 @@ function PlanManagement() {
                                 </div>
                             </div>
 
-                            {/* <div className="form-group">
-                                <label>Descripción</label>
-                                <textarea
-                                    value={selectedPlan.description}
-                                    onChange={(e) => setSelectedPlan({ ...selectedPlan, description: e.target.value })}
-                                    rows="3"
-                                />
-                            </div> */}
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            id="highlighted"
+                                            checked={selectedPlan.highlighted === 1}
+                                            onChange={(e) =>
+                                                setSelectedPlan({
+                                                    ...selectedPlan,
+                                                    highlighted: e.target.checked ? 1 : 0
+                                                })
+                                            }
+                                        />  
+                                        <span className="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div className="form-group">Marcar como destacado</div>
+                            </div>
 
                             <div className="form-group">
                                 <label>Características</label>
