@@ -14,7 +14,7 @@ module.exports = (router, database) =>
                  SET name = ?, email = ?, phone = ?, dniType = ?, dni = ? 
                  WHERE id = ?`,
                 [name, email, phone, dniType, dni, id]
-            );
+            ); 
 
             await con.promise().query(
                 `UPDATE subscriptions 

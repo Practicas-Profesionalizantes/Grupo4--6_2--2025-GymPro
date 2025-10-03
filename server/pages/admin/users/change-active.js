@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 
 module.exports = (router, database) => 
-{
+{ 
     router.post('/users/change-active', async (req, res) => {
         try {
             const con = mysql.createConnection(database);

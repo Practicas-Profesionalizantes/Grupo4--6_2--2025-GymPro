@@ -25,7 +25,7 @@ module.exports = (router, database) =>
                 FROM log_access
                 GROUP BY user
             ) lg ON u.id = lg.user;
-        `);
+        `); 
 
         res.status(200).json({
             success: true,

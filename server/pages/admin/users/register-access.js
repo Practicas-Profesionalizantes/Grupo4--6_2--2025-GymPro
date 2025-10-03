@@ -9,7 +9,7 @@ module.exports = (router, database) =>
 
             res.status(200).json({
                 last_access: results_log_access[0].date
-            });
+            }); 
         } catch (error) {
             res.status(500).json({
                 success: false
