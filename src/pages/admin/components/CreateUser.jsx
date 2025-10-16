@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { User, Shield } from "lucide-react"
+import { setNotification } from "../../../components/notifications/NotificationBar"
 
 function CreateUser() {
   const [userType, setUserType] = useState("user")
@@ -44,15 +45,13 @@ function CreateUser() {
     e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden")
+      setNotification({ title: "Error", message: "Las contraseñas no coinciden", type: "error" });
       return
     }
 
-    // Aquí iría la lógica para crear el usuario
     console.log("Crear usuario:", { ...formData, userType })
-    alert(`Usuario ${userType === "admin" ? "administrador" : "normal"} creado exitosamente`)
+    setNotification({ title: "Exito", message: "Usuario creado exitosamente", type: "success" });
 
-    // Resetear formulario
     setFormData({
       name: "",
       lastname: "",

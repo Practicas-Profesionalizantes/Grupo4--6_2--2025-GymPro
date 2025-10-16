@@ -6,10 +6,12 @@ import PaymentFailedPage from "./pages/payment/PaymentFailedPage";
 import AdminDashboard from "./pages/admin/AdminDashboard"
 import Footer from "./components/Footer";
 import './assets/css/main.css'
+import NotificationBarWrapper from './components/notifications/NotificationBar';
 
 function App() {
   return (
     <>
+      <NotificationBarWrapper />
       <Routes>
         <Route path="/" element={<HomePage />}  />
         <Route path="/subscription" element={<SubscriptionPage />} />

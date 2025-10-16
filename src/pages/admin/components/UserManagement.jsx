@@ -67,7 +67,6 @@ function UserManagement() {
         if (!selectedUser) return
         setSaving(true)
         try {
-            // ajustá la ruta si tu backend usa otra
             const { data } = await axios.put(`${baseURL}/api/admin/users/edit`, {
                 id: selectedUser.id,
                 name: selectedUser.name,
@@ -79,7 +78,6 @@ function UserManagement() {
                 expire: selectedUser.expire,
             })
 
-            // si el server confirma ok, actualizamos en cliente
             if (data?.success !== false) {
                 setUsers((prev) =>
                     prev.map((u) =>

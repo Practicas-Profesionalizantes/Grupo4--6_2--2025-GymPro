@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Edit, Plus, Trash2 } from "lucide-react"
+import { setNotification } from "../../../components/notifications/NotificationBar";
 import axios from 'axios';
+import { type } from "@testing-library/user-event/dist/type";
 
 function PlanManagement() {
     const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
@@ -61,21 +63,23 @@ function PlanManagement() {
         if (!confirmDelete) return;
 
         try {
-            const res = await fetch(`/api/admin/plans/delete/${planId}`, {
+            const res = await fetch(`${baseURL}/api/admin/plans/delete/${planId}`, {
                 method: "DELETE",
             });
-
+            console.log(res)
             if (!res.ok) {
                 throw new Error("Error al eliminar plan");
             }
 
-            const deletedPlan = await res.json();
-
-            setPlans((prev) => prev.filter((p) => p.id !== deletedPlan.id));
-            alert(`Plan "${deletedPlan.name}" eliminado correctamente`);
+            const deletedPlan = (await res.json()).plan;
+            console.log(deletedPlan)
+            setPlans((prev) => prev.filter((p) => p.id !== deletedPlan.id   ));
+         
+            setNotification({ title: "Exito", message: "Plan eliminado correctamente", type: "success"});
         } catch (error) {
             console.error("Error eliminando plan:", error);
-            alert("No se pudo eliminar el plan");
+        
+            setNotification({ title: "Error", message: "No se pudo eliminar el plan", type: "error" });
         }
     }
 
