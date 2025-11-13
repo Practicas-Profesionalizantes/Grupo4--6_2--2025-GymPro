@@ -74,7 +74,7 @@ function UserManagement() {
                 phone: selectedUser.phone,
                 dniType: selectedUser.dniType,
                 dni: selectedUser.dni,
-                plan: selectedUser.plan,
+                plan: selectedUser.plan_id,
                 expire: selectedUser.expire,
             })
 

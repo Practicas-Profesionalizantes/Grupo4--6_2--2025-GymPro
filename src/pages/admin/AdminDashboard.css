@@ -295,11 +295,11 @@
 }
 
 /* Dashboard Charts */
-.dashboard-charts {
+/* .dashboard-charts {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
-}
+} */
 
 .chart-container,
 .recent-activity {

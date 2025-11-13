@@ -2,10 +2,16 @@ const mysql = require('mysql2');
 
 module.exports = (router, database) => 
 {
+    const toMySQLDate = (iso) => {
+        const d = new Date(iso);
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+    };
+
     router.put('/users/edit', async (req, res) => {
         const con = mysql.createConnection(database);
         const { id, name, email, phone, dniType, dni, plan, expire } = req.body;
-
+ 
         try {
             await con.promise().beginTransaction();
 
@@ -20,7 +26,7 @@ module.exports = (router, database) =>
                 `UPDATE subscriptions 
                  SET plan = ?, expire = ? 
                  WHERE user = ?`,
-                [plan, expire, id]
+                [plan, toMySQLDate(expire), id]
             );
 
             await con.promise().commit();
@@ -29,6 +35,7 @@ module.exports = (router, database) =>
                 success: true
             });
         } catch (error) {
+            console.error(error);
             await con.promise().rollback();
             res.status(500).json({
                 success: false

@@ -14,8 +14,7 @@ function SubscriptionPage() {
         axios.get(`${baseURL}/api/plans/get`)
             .then(res => setPlans(res.data.data))
             .catch(err => console.error(err));
-    }, []);
-
+    }, [baseURL]);
 
     return (
     <>
@@ -77,6 +76,7 @@ function SubscriptionPage() {
                                     </select>
                                     <input type="date" name="dateOfBirth" required />
                                 </div>
+                                <input type="number" name="phone" placeholder="Numero de telefono" required />
                                 <input type="email" name="email" placeholder="Email" required />
                                 <input type="password" name="password" placeholder="Password" required />
                                 <input type="number" name="emergencyContact" placeholder="Contacto De Emergencia" required />

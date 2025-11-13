@@ -22,8 +22,8 @@ module.exports = (router, database, mpClient) => {
 
             if (results.length === 0) {
                 const [inserted_user] = await con.promise().query(
-                    `INSERT INTO users (email, password, name, lastname) VALUES (?, ?, ?, ?)`,
-                    [metadata.user.email, metadata.user.password, metadata.user.name, metadata.user.surname]
+                    `INSERT INTO users (email, password, name, lastname, phone, dniType, dni) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [metadata.user.email, metadata.user.password, metadata.user.name, metadata.user.surname, metadata.user.area_code + metadata.user.phone, metadata.user.documentType, metadata.user.documentNumber]
                 )
 
                 userId = inserted_user.insertId;

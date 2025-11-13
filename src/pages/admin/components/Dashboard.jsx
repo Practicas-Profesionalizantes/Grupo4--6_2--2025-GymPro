@@ -1,27 +1,73 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Users, TrendingUp, Calendar, Settings } from "lucide-react"
+import axios from "axios"
+
+const daysUntil = (dateStr) => {
+  if (!dateStr) return Infinity
+  const now = new Date()
+  const d = new Date(dateStr)
+  return Math.ceil((d - now) / (1000 * 60 * 60 * 24))
+}
+
+const EXPIRING_DAYS = 30
 
 function Dashboard() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeUsers: 0,
-    expiringMemberships: 0,
-    activePlans: 0,
-    administrators: 0,
-  })
+  const baseURL = `${window.location.protocol}//${window.location.hostname}:80`
+
+  const [users, setUsers] = useState([])
+  const [plans, setPlans] = useState([])
 
   useEffect(() => {
-    // Simular carga de estadísticas
-    setStats({
-      totalUsers: 142,
-      activeUsers: 142,
-      expiringMemberships: 23,
-      activePlans: 4,
-      administrators: 3,
-    })
-  }, [])
+    axios
+      .get(`${baseURL}/api/plans/get`)
+      .then((res) => setPlans(res?.data?.data ?? []))
+      .catch((err) => console.error(err))
+
+    axios
+      .get(`${baseURL}/api/admin/users/get`)
+      .then((res) => setUsers(res?.data?.data ?? []))
+      .catch((err) => console.error(err))
+  }, [baseURL])
+
+  const { stats, upcomingExpirations } = useMemo(() => {
+    const isActiveUser = (u) => Number(u?.active) === 1
+    const isAdmin = (u) => String(u?.group || "").toLowerCase() === "admin"
+
+    const activeUsers = users.filter(isActiveUser).length
+    const expiringMemberships = users.filter(
+      (u) =>
+        isActiveUser(u) &&
+        u?.expire &&
+        daysUntil(u.expire) >= 0 &&
+        daysUntil(u.expire) <= EXPIRING_DAYS
+    ).length
+    const activePlans = plans.filter((p) =>
+      p?.active == null ? true : Boolean(Number(p.active))
+    ).length
+    const administrators = users.filter(isAdmin).length
+
+    const upcoming = users
+      .filter((u) => isActiveUser(u) && u?.expire)
+      .map((u) => ({ user: u, days: daysUntil(u.expire) }))
+      .filter((x) => x.days >= 0 && x.days <= EXPIRING_DAYS)
+      .sort((a, b) => a.days - b.days)
+      .slice(0, 10)
+
+    return {
+      stats: {
+        totalUsers: users.length,
+        activeUsers,
+        expiringMemberships,
+        activePlans,
+        administrators,
+      },
+      upcomingExpirations: upcoming,
+    }
+  }, [users, plans])
+
+  const statusClass = (d) => (d <= 3 ? "urgent" : d <= 10 ? "warning" : "success")
 
   return (
     <div className="admin-section">
@@ -36,8 +82,7 @@ function Dashboard() {
             <p className="stat-title">Usuarios Activos</p>
             <Users className="stat-icon" />
           </div>
-          <h3 className="stat-value">{stats.totalUsers}</h3>
-          <span className="stat-change positive">+12% desde el último mes</span>
+          <h3 className="stat-value">{stats.activeUsers}</h3>
         </div>
 
         <div className="stat-card">
@@ -46,7 +91,6 @@ function Dashboard() {
             <Calendar className="stat-icon" />
           </div>
           <h3 className="stat-value">{stats.expiringMemberships}</h3>
-          <span className="stat-change neutral">+5 desde el último mes</span>
         </div>
 
         <div className="stat-card">
@@ -55,7 +99,6 @@ function Dashboard() {
             <Settings className="stat-icon" />
           </div>
           <h3 className="stat-value">{stats.activePlans}</h3>
-          <span className="stat-change neutral">0 desde el último mes</span>
         </div>
 
         <div className="stat-card">
@@ -64,12 +107,11 @@ function Dashboard() {
             <TrendingUp className="stat-icon" />
           </div>
           <h3 className="stat-value">{stats.administrators}</h3>
-          <span className="stat-change positive">+1 desde el último mes</span>
         </div>
       </div>
 
       <div className="dashboard-charts">
-        <div className="recent-activity">
+        {/* <div className="recent-activity">
           <h3>Actividad Reciente</h3>
           <div className="activity-list">
             <div className="activity-item">
@@ -91,32 +133,36 @@ function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="recent-activity">
           <h3>Próximos Vencimientos</h3>
           <div className="activity-list">
-            <div className="activity-item">
-              <div className="activity-info">
-                <h4>Carlos López</h4>
-                <p>Vence en 3 días</p>
+            {upcomingExpirations.length === 0 && (
+              <div className="activity-item">
+                <div className="activity-info">
+                  <h4>Sin vencimientos próximos</h4>
+                  <p>Dentro de {EXPIRING_DAYS} días</p>
+                </div>
               </div>
-              <span className="activity-status urgent">Urgente</span>
-            </div>
-            <div className="activity-item">
-              <div className="activity-info">
-                <h4>Laura García</h4>
-                <p>Vence en 7 días</p>
-              </div>
-              <span className="activity-status warning">Próximo</span>
-            </div>
-            <div className="activity-item">
-              <div className="activity-info">
-                <h4>Roberto Silva</h4>
-                <p>Vence en 14 días</p>
-              </div>
-              <span className="activity-status success">OK</span>
-            </div>
+            )}
+            {upcomingExpirations.map(({ user, days }) => {
+              const label =
+                [user?.name, user?.lastname].filter(Boolean).join(" ") ||
+                user?.email ||
+                `Usuario #${user?.id}`
+              return (
+                <div key={user?.id} className="activity-item">
+                  <div className="activity-info">
+                    <h4>{label}</h4>
+                    <p>Vence en {days} {days === 1 ? "día" : "días"}</p>
+                  </div>
+                  <span className={`activity-status ${statusClass(days)}`}>
+                    {days <= 3 ? "Urgente" : days <= 10 ? "Próximo" : "OK"}
+                  </span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
