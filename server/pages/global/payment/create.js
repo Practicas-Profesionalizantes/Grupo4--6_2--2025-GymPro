@@ -8,10 +8,10 @@ module.exports = (router, database, mpClient) => {
         const con = mysql.createConnection(database);
         const preference = new Preference(mpClient);
         const body = req.body;
-        console.log(body)
+
         try {
             const [results_plans] = await con.promise().query(`SELECT * FROM plans WHERE id = '${body.plan}'`);
-            console.log(results_plans)
+
             const selected_plan = results_plans[0];
 
             const passwordHash = await bcrypt.hash(body.password, 10);
