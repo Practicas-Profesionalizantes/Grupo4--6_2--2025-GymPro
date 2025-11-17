@@ -1,8 +1,6 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versión del servidor:         11.7.2-MariaDB - mariadb.org binary distribution
--- SO del servidor:              Win64
--- HeidiSQL Versión:             12.10.0.7000
+-- Versión del servidor origen:  11.7.2-MariaDB
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -14,26 +12,29 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Volcando estructura de base de datos para gympro
-CREATE DATABASE IF NOT EXISTS `gympro` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci */;
+-- Base de datos
+CREATE DATABASE IF NOT EXISTS `gympro`
+  /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `gympro`;
 
--- Volcando estructura para tabla gympro.log_access
-CREATE TABLE IF NOT EXISTS `log_access` (
+-- =========================
+--  TABLAS
+-- =========================
+
+-- 1) users (tabla referenciada por otras)
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user` int(11) NOT NULL DEFAULT 0,
-  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  `group` varchar(50) NOT NULL DEFAULT 'user',
+  `email` varchar(50) NOT NULL,
+  `password` longtext NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `lastname` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK__users` (`user`),
-  CONSTRAINT `FK__users` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=3
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.log_access: ~1 rows (aproximadamente)
-REPLACE INTO `log_access` (`id`, `user`, `date`) VALUES
-	(1, 2, '2025-09-04 14:58:51');
-
--- Volcando estructura para tabla gympro.plans
+-- 2) plans
 CREATE TABLE IF NOT EXISTS `plans` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -44,45 +45,23 @@ CREATE TABLE IF NOT EXISTS `plans` (
   `highlighted` int(11) NOT NULL DEFAULT 0,
   `extraInfo` longtext DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.plans: ~3 rows (aproximadamente)
-REPLACE INTO `plans` (`id`, `name`, `price`, `discount`, `inscription`, `active`, `highlighted`, `extraInfo`) VALUES
-	(1, 'PLAN BÁSICO', 29000, 30, 5000, 1, 0, 'DÉBITO AUTOMÁTICO <span>(Permanencia mínima de 3 meses)</span>'),
-	(2, 'PLAN PREMIUM', 49000, 0, 0, 1, 1, '¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de ${PRICE_PER_6})</span>'),
-	(3, 'PLAN ELITE', 79000, 0, 0, 1, 0, '¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de ${PRICE_PER_6})</span>');
-
--- Volcando estructura para tabla gympro.plans_features
+-- 3) plans_features
 CREATE TABLE IF NOT EXISTS `plans_features` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plan` int(11) NOT NULL,
   `feature` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK__plans` (`plan`),
-  CONSTRAINT `FK__plans` FOREIGN KEY (`plan`) REFERENCES `plans` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  CONSTRAINT `FK__plans` FOREIGN KEY (`plan`)
+    REFERENCES `plans` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=18
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.plans_features: ~15 rows (aproximadamente)
-REPLACE INTO `plans_features` (`id`, `plan`, `feature`) VALUES
-	(1, 1, 'Acceso al gimnasio'),
-	(2, 1, 'Equipamiento estándar'),
-	(3, 1, 'Acceso a vestuarios'),
-	(4, 1, '2 pases para invitados al mes'),
-	(5, 1, 'Planes de entrenamiento online'),
-	(6, 2, 'Acceso 24/7 al gimnasio'),
-	(7, 2, 'Todo el equipamiento'),
-	(8, 2, '4 clases grupales al mes'),
-	(9, 2, '1 sesión de entrenamiento personal'),
-	(10, 2, 'Evaluación de estado físico'),
-	(11, 2, 'Acceso a sauna y spa'),
-	(12, 3, 'Todo lo del Plan Premium'),
-	(13, 3, 'Clases grupales ilimitadas'),
-	(14, 3, '4 sesiones personales'),
-	(15, 3, 'Asesoría nutricional'),
-	(16, 3, 'Servicio de locker VIP'),
-	(17, 3, 'Acceso a todas las sedes');
-
--- Volcando estructura para tabla gympro.subscriptions
+-- 4) subscriptions
 CREATE TABLE IF NOT EXISTS `subscriptions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `payment_id` int(11) NOT NULL,
@@ -95,29 +74,74 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
   UNIQUE KEY `payment_id` (`payment_id`),
   KEY `FK_subscriptions_user` (`user`),
   KEY `FK_subscriptions_plans` (`plan`),
-  CONSTRAINT `FK_subscriptions_plans` FOREIGN KEY (`plan`) REFERENCES `plans` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_subscriptions_user` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  CONSTRAINT `FK_subscriptions_plans` FOREIGN KEY (`plan`)
+    REFERENCES `plans` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_subscriptions_user` FOREIGN KEY (`user`)
+    REFERENCES `users` (`id`)
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.subscriptions: ~1 rows (aproximadamente)
-REPLACE INTO `subscriptions` (`id`, `payment_id`, `user`, `amount`, `plan`, `expire`, `active`) VALUES
-	(1, 1324499664, 2, 29000, 1, '2025-09-21', 1);
-
--- Volcando estructura para tabla gympro.users
-CREATE TABLE IF NOT EXISTS `users` (
+-- 5) log_access
+CREATE TABLE IF NOT EXISTS `log_access` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group` varchar(50) NOT NULL DEFAULT 'user',
-  `email` varchar(50) NOT NULL,
-  `password` longtext NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `lastname` varchar(50) NOT NULL,
+  `user` int(11) NOT NULL DEFAULT 0,
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  KEY `FK__users` (`user`),
+  CONSTRAINT `FK__users` FOREIGN KEY (`user`)
+    REFERENCES `users` (`id`)
+    ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2
+  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.users: ~1 rows (aproximadamente)
+-- =========================
+--  DATOS INICIALES
+-- =========================
+
+-- users
 REPLACE INTO `users` (`id`, `group`, `email`, `password`, `name`, `lastname`) VALUES
-	(2, 'user', 'asd@gmail.com', '$2b$10$qWuDqZKJ3pFQno0.RovxUu4aF2OslqN4hZo.PvXK24QrWAj0aimY.', 'asd', 'jas');
+  (2, 'user', 'asd@gmail.com',
+   '$2b$10$qWuDqZKJ3pFQno0.RovxUu4aF2OslqN4hZo.PvXK24QrWAj0aimY.',
+   'asd', 'jas');
+
+-- plans
+REPLACE INTO `plans` (`id`, `name`, `price`, `discount`, `inscription`, `active`, `highlighted`, `extraInfo`) VALUES
+  (1, 'PLAN BÁSICO', 29000, 30, 5000, 1, 0,
+   'DÉBITO AUTOMÁTICO <span>(Permanencia mínima de 3 meses)</span>'),
+  (2, 'PLAN PREMIUM', 49000, 0, 0, 1, 1,
+   '¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de ${PRICE_PER_6})</span>'),
+  (3, 'PLAN ELITE', 79000, 0, 0, 1, 0,
+   '¡TAMBIÉN PODÉS CUOTEAR! <span>(6 pagos de ${PRICE_PER_6})</span>');
+
+-- plans_features
+REPLACE INTO `plans_features` (`id`, `plan`, `feature`) VALUES
+  (1, 1, 'Acceso al gimnasio'),
+  (2, 1, 'Equipamiento estándar'),
+  (3, 1, 'Acceso a vestuarios'),
+  (4, 1, '2 pases para invitados al mes'),
+  (5, 1, 'Planes de entrenamiento online'),
+  (6, 2, 'Acceso 24/7 al gimnasio'),
+  (7, 2, 'Todo el equipamiento'),
+  (8, 2, '4 clases grupales al mes'),
+  (9, 2, '1 sesión de entrenamiento personal'),
+  (10, 2, 'Evaluación de estado físico'),
+  (11, 2, 'Acceso a sauna y spa'),
+  (12, 3, 'Todo lo del Plan Premium'),
+  (13, 3, 'Clases grupales ilimitadas'),
+  (14, 3, '4 sesiones personales'),
+  (15, 3, 'Asesoría nutricional'),
+  (16, 3, 'Servicio de locker VIP'),
+  (17, 3, 'Acceso a todas las sedes');
+
+-- subscriptions
+REPLACE INTO `subscriptions` (`id`, `payment_id`, `user`, `amount`, `plan`, `expire`, `active`) VALUES
+  (1, 1324499664, 2, 29000, 1, '2025-09-21', 1);
+
+-- log_access
+REPLACE INTO `log_access` (`id`, `user`, `date`) VALUES
+  (1, 2, '2025-09-04 14:58:51');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
