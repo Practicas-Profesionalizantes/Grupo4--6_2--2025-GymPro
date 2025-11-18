@@ -15,21 +15,37 @@ const cors = require('cors');
 
 // settings
 app.set('port', config.web.port);
-// app.set('views', path.join(__dirname, 'client/pages'));
-// app.set('view engine', 'ejs');
+
+const corsOptions = {
+    origin: function(origin, callback) {
+        // Allow requests from localhost on any port for development
+        if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
 
 // middlewares
 app.use(bp.json({ limit: '10mb' }));
 app.use(bp.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cors(corsOptions));
 app.use(session({
     secret: config.auth.secret,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // set to true if using HTTPS
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    }
 }))
 app.use(useragent.express());
 app.use(cookieParser());
-app.use(cors());
-
 
 app.use((req, res, next) => {
     // res.locals.getFile = function(filePath) {

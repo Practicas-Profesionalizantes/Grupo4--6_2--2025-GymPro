@@ -31,7 +31,7 @@ module.exports.login = async (req, res, loginInfo) =>
     try {
         let token;
         let sessionId;
-        let query = `SELECT * FROM users WHERE username = ${con.escape(loginInfo.username)}`;
+        let query = `SELECT * FROM users WHERE email = ${con.escape(loginInfo.username)}`;
 
         if (loginInfo.token)
         {

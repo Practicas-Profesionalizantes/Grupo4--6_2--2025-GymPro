@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { Users, CreditCard, UserPlus, BarChart3, Settings, LogOut, Menu } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { Users, CreditCard, UserPlus, BarChart3, LogOut, Menu } from 'lucide-react'
+import axios from "axios"
 import UserManagement from "./components/UserManagement"
 import PlanManagement from "./components/PlanManagement"
 import CreateUser from "./components/CreateUser"
@@ -31,7 +33,7 @@ const menuItems = [
   }
 ]
 
-function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen }) {
+function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen, onLogout }) {
   return (
     <>
       {/* Mobile overlay */}
@@ -66,7 +68,7 @@ function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen }) {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item logout">
+          <button className="nav-item logout" onClick={onLogout}>
             <LogOut size={20} />
             <span>Cerrar Sesión</span>
           </button>
@@ -79,6 +81,21 @@ function AdminSidebar({ activeSection, setActiveSection, isOpen, setIsOpen }) {
 function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("dashboard")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      const baseURL = `${window.location.protocol}//${window.location.hostname}:80`;
+      await axios.post(`${baseURL}/api/auth/logout`, {}, {
+        withCredentials: true
+      });
+      localStorage.removeItem('token');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      navigate('/login');
+    }
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -102,6 +119,7 @@ function AdminDashboard() {
         setActiveSection={setActiveSection}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
+        onLogout={handleLogout}
       />
 
       <div className="main-content">
