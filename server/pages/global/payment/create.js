@@ -23,9 +23,9 @@ module.exports = (router, database, mpClient) => {
                     expiration_date_to: moment().tz('America/Argentina/Buenos_Aires').add(30, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
                     auto_return: "all",
                     back_urls: {
-                        success: req.headers.host + "/api/payment/success",
-                        pending: req.headers.host + "/payment/pending",
-                        failure: req.headers.host + "/api/payment/failed"
+                        success: "http://" + req.headers.host + "/api/payment/success",
+                        pending: "http://" + req.headers.host + "/payment/pending",
+                        failure: "http://" + req.headers.host + "/api/payment/failed"
                     },
                     payment_methods: {
                         excluded_payment_methods: [],
@@ -83,7 +83,9 @@ module.exports = (router, database, mpClient) => {
             //     success: true,
             //     link: newPayment.init_point
             // });
-            res.redirect(newPayment.init_point)
+            //res.redirect(newPayment.init_point)
+            res.redirect(newPayment.sandbox_init_point);
+
         } catch (error) {
             console.log("Error: ", error);
         } finally {
