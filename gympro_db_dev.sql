@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `log_access` (
   CONSTRAINT `FK__users` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.log_access: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla gympro.log_access: ~0 rows (aproximadamente)
 INSERT INTO `log_access` (`id`, `user`, `date`) VALUES
 	(1, 2, '2025-09-04 14:58:51');
 
@@ -93,16 +93,22 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`id`),
   KEY `FK_session_users` (`userId`),
   CONSTRAINT `FK_session_users` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla gympro.sessions: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla gympro.sessions: ~12 rows (aproximadamente)
 INSERT INTO `sessions` (`id`, `userId`, `device`, `application`, `ip`, `logged`) VALUES
 	(16, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 20:44:22'),
 	(18, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 20:48:16'),
 	(19, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 20:48:23'),
 	(20, 2, 'iPhone', 'Safari', '127.0.0.1', '2025-11-17 20:48:48'),
 	(21, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 21:05:22'),
-	(22, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 21:08:02');
+	(22, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 21:08:02'),
+	(23, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:33:40'),
+	(24, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:35:03'),
+	(25, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:42:25'),
+	(26, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:48:01'),
+	(27, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:49:51'),
+	(28, 2, 'Microsoft Windows', 'Chrome', '127.0.0.1', '2025-11-17 22:54:50');
 
 -- Volcando estructura para tabla gympro.subscriptions
 CREATE TABLE IF NOT EXISTS `subscriptions` (
@@ -121,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `subscriptions` (
   CONSTRAINT `FK_subscriptions_user` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.subscriptions: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla gympro.subscriptions: ~0 rows (aproximadamente)
 INSERT INTO `subscriptions` (`id`, `payment_id`, `user`, `amount`, `plan`, `expire`, `active`) VALUES
 	(1, 1324499664, 2, 29000, 1, '2025-09-21', 1);
 
@@ -133,13 +139,27 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` longtext NOT NULL,
   `name` varchar(50) NOT NULL,
   `lastname` varchar(50) NOT NULL,
+  `dni` int(11) NOT NULL DEFAULT 0,
+  `dniType` varchar(50) NOT NULL,
+  `phone` int(11) DEFAULT NULL,
+  `sex` varchar(50) DEFAULT NULL,
+  `dateOfBirth` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
+  `addressNumber` varchar(50) DEFAULT NULL,
+  `floor` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `province` varchar(50) DEFAULT NULL,
+  `emergencyContact` varchar(50) DEFAULT NULL,
+  `plan` varchar(50) DEFAULT NULL,
+  `expirationDate` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Volcando datos para la tabla gympro.users: ~1 rows (aproximadamente)
-INSERT INTO `users` (`id`, `group`, `email`, `password`, `name`, `lastname`) VALUES
-	(2, 'admin', 'asd@gmail.com', '$2b$10$qWuDqZKJ3pFQno0.RovxUu4aF2OslqN4hZo.PvXK24QrWAj0aimY.', 'asd', 'jas');
+-- Volcando datos para la tabla gympro.users: ~2 rows (aproximadamente)
+INSERT INTO `users` (`id`, `group`, `email`, `password`, `name`, `lastname`, `dni`, `dniType`, `phone`, `sex`, `dateOfBirth`, `address`, `addressNumber`, `floor`, `city`, `province`, `emergencyContact`, `plan`, `expirationDate`) VALUES
+	(2, 'admin', 'asd@gmail.com', '$2b$10$qWuDqZKJ3pFQno0.RovxUu4aF2OslqN4hZo.PvXK24QrWAj0aimY.', 'asd', 'jas', 0, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+	(3, 'admin', 'luquijuarez2016@gmail.com', '$2b$10$YHbNGEIz49XDx7NQYxR/sutvtdVLQhfx//9N5.NjB5vQgguZKYBG6', 'Lucas', 'Juarez', 23, 'passport', 1139439110, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
