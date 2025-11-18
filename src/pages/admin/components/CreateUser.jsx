@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { User, Shield } from "lucide-react"
-import { setNotification } from "../../../components/notifications/NotificationBar"
+import { User, Shield, Loader2 } from 'lucide-react'
 
 function CreateUser() {
   const [userType, setUserType] = useState("user")
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -28,9 +28,9 @@ function CreateUser() {
   })
 
   const [plans] = useState([
-    { id: 1, name: "Forza Flex" },
-    { id: 2, name: "Forza Premium" },
-    { id: 3, name: "Forza Elite" },
+    { id: 1, name: "PLAN BÁSICO" },
+    { id: 2, name: "PLAN PREMIUM" },
+    { id: 3, name: "PLAN ELITE" },
   ])
 
   const handleInputChange = (e) => {
@@ -41,37 +41,76 @@ function CreateUser() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      setNotification({ title: "Error", message: "Las contraseñas no coinciden", type: "error" });
+      alert("Las contraseñas no coinciden")
       return
     }
 
-    console.log("Crear usuario:", { ...formData, userType })
-    setNotification({ title: "Exito", message: "Usuario creado exitosamente", type: "success" });
+    if (!formData.email || !formData.password || !formData.name || !formData.lastname) {
+      alert("Por favor completa todos los campos requeridos")
+      return
+    }
 
-    setFormData({
-      name: "",
-      lastname: "",
-      email: "",
-      phone: "",
-      documentType: "dni",
-      documentNumber: "",
-      sex: "",
-      dateOfBirth: "",
-      address: "",
-      addressNumber: "",
-      floor: "",
-      city: "",
-      province: "",
-      emergencyContact: "",
-      plan: "",
-      expirationDate: "",
-      password: "",
-      confirmPassword: "",
-    })
+    if (userType === "user" && !formData.plan) {
+      alert("Por favor selecciona un plan para el usuario")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('http://localhost/api/admin/users/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          userType,
+          // Convertir nombre del plan a ID
+          plan: formData.plan ? plans.find(p => p.name === formData.plan)?.id : null
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        alert(`Error: ${data.error || 'Error al crear el usuario'}`)
+        return
+      }
+
+      alert(`Usuario ${userType === "admin" ? "administrador" : "normal"} creado exitosamente`)
+
+      // Resetear formulario
+      setFormData({
+        name: "",
+        lastname: "",
+        email: "",
+        phone: "",
+        documentType: "dni",
+        documentNumber: "",
+        sex: "",
+        dateOfBirth: "",
+        address: "",
+        addressNumber: "",
+        floor: "",
+        city: "",
+        province: "",
+        emergencyContact: "",
+        plan: "",
+        expirationDate: "",
+        password: "",
+        confirmPassword: "",
+      })
+    } catch (error) {
+      console.error('[v0] Error:', error)
+      alert('Error al crear el usuario. Intenta de nuevo.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -90,6 +129,7 @@ function CreateUser() {
               value="user"
               checked={userType === "user"}
               onChange={(e) => setUserType(e.target.value)}
+              disabled={isLoading}
             />
             <div className="type-card">
               <User size={32} />
@@ -105,6 +145,7 @@ function CreateUser() {
               value="admin"
               checked={userType === "admin"}
               onChange={(e) => setUserType(e.target.value)}
+              disabled={isLoading}
             />
             <div className="type-card">
               <Shield size={32} />
@@ -121,29 +162,62 @@ function CreateUser() {
           <div className="form-row">
             <div className="form-group">
               <label>Nombre *</label>
-              <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
+              <input 
+                type="text" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleInputChange} 
+                required 
+                disabled={isLoading}
+              />
             </div>
             <div className="form-group">
               <label>Apellido *</label>
-              <input type="text" name="lastname" value={formData.lastname} onChange={handleInputChange} required />
+              <input 
+                type="text" 
+                name="lastname" 
+                value={formData.lastname} 
+                onChange={handleInputChange} 
+                required 
+                disabled={isLoading}
+              />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>Email *</label>
-              <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+              <input 
+                type="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleInputChange} 
+                required 
+                disabled={isLoading}
+              />
             </div>
             <div className="form-group">
               <label>Teléfono *</label>
-              <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required />
+              <input 
+                type="tel" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleInputChange} 
+                required 
+                disabled={isLoading}
+              />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>Tipo de Documento</label>
-              <select name="documentType" value={formData.documentType} onChange={handleInputChange}>
+              <select 
+                name="documentType" 
+                value={formData.documentType} 
+                onChange={handleInputChange}
+                disabled={isLoading}
+              >
                 <option value="dni">DNI</option>
                 <option value="passport">Pasaporte</option>
               </select>
@@ -156,6 +230,7 @@ function CreateUser() {
                 value={formData.documentNumber}
                 onChange={handleInputChange}
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -163,7 +238,12 @@ function CreateUser() {
           <div className="form-row">
             <div className="form-group">
               <label>Género</label>
-              <select name="sex" value={formData.sex} onChange={handleInputChange}>
+              <select 
+                name="sex" 
+                value={formData.sex} 
+                onChange={handleInputChange}
+                disabled={isLoading}
+              >
                 <option value="">Seleccionar</option>
                 <option value="m">Masculino</option>
                 <option value="f">Femenino</option>
@@ -172,7 +252,13 @@ function CreateUser() {
             </div>
             <div className="form-group">
               <label>Fecha de Nacimiento</label>
-              <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleInputChange} />
+              <input 
+                type="date" 
+                name="dateOfBirth" 
+                value={formData.dateOfBirth} 
+                onChange={handleInputChange}
+                disabled={isLoading}
+              />
             </div>
           </div>
         </div>
@@ -184,26 +270,55 @@ function CreateUser() {
               <div className="form-row">
                 <div className="form-group">
                   <label>Calle</label>
-                  <input type="text" name="address" value={formData.address} onChange={handleInputChange} />
+                  <input 
+                    type="text" 
+                    name="address" 
+                    value={formData.address} 
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Número</label>
-                  <input type="text" name="addressNumber" value={formData.addressNumber} onChange={handleInputChange} />
+                  <input
+                    type="text"
+                    name="addressNumber"
+                    value={formData.addressNumber}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Piso/Dpto</label>
-                  <input type="text" name="floor" value={formData.floor} onChange={handleInputChange} />
+                  <input 
+                    type="text" 
+                    name="floor" 
+                    value={formData.floor} 
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Ciudad</label>
-                  <input type="text" name="city" value={formData.city} onChange={handleInputChange} />
+                  <input 
+                    type="text" 
+                    name="city" 
+                    value={formData.city} 
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Provincia</label>
-                  <select name="province" value={formData.province} onChange={handleInputChange}>
+                  <select 
+                    name="province" 
+                    value={formData.province} 
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                  >
                     <option value="">Seleccionar Provincia</option>
                     <option value="C">CABA</option>
                     <option value="B">PROVINCIA DE BUENOS AIRES</option>
@@ -239,6 +354,7 @@ function CreateUser() {
                   name="emergencyContact"
                   value={formData.emergencyContact}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -247,8 +363,14 @@ function CreateUser() {
               <h3>Plan y Membresía</h3>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Plan</label>
-                  <select name="plan" value={formData.plan} onChange={handleInputChange}>
+                  <label>Plan *</label>
+                  <select 
+                    name="plan" 
+                    value={formData.plan} 
+                    onChange={handleInputChange}
+                    required
+                    disabled={isLoading}
+                  >
                     <option value="">Seleccionar Plan</option>
                     {plans.map((plan) => (
                       <option key={plan.id} value={plan.name}>
@@ -258,12 +380,14 @@ function CreateUser() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Fecha de Vencimiento</label>
+                  <label>Fecha de Vencimiento *</label>
                   <input
                     type="date"
                     name="expirationDate"
                     value={formData.expirationDate}
                     onChange={handleInputChange}
+                    required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -276,7 +400,14 @@ function CreateUser() {
           <div className="form-row">
             <div className="form-group">
               <label>Contraseña *</label>
-              <input type="password" name="password" value={formData.password} onChange={handleInputChange} required />
+              <input 
+                type="password" 
+                name="password" 
+                value={formData.password} 
+                onChange={handleInputChange} 
+                required 
+                disabled={isLoading}
+              />
             </div>
             <div className="form-group">
               <label>Confirmar Contraseña *</label>
@@ -286,17 +417,33 @@ function CreateUser() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="button" className="btn-secondary">
+          <button 
+            type="button" 
+            className="btn-secondary"
+            disabled={isLoading}
+          >
             Cancelar
           </button>
-          <button type="submit" className="btn-primary">
-            Crear Usuario
+          <button 
+            type="submit" 
+            className="btn-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={18} className="inline mr-2 animate-spin" />
+                Creando...
+              </>
+            ) : (
+              'Crear Usuario'
+            )}
           </button>
         </div>
       </form>
